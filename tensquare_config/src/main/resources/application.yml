@@ -1,0 +1,21 @@
+server:
+  port: 8004
+spring:
+  application:
+    name: tensquare-config
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://gitee.com/zhuzhiqiang997/tensquare_config.git
+          username: zhuzhiqiang997
+          password: zzq123456
+  rabbitmq:
+    host: 192.168.43.133
+    username: root
+    password: root
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh
