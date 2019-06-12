@@ -12,6 +12,7 @@
     <groupId>com.tensquare</groupId>
     <artifactId>tensquare_common</artifactId>
 
+<!--    haha-->
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
