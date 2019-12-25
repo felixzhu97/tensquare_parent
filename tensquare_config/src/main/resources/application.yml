@@ -7,13 +7,13 @@ spring:
     config:
       server:
         git:
-          uri: https://gitee.com/zhuzhiqiang997/tensquare_config.git
-          username: 
-          password: 
+          uri: http://192.168.138.100:3000/test/tensquare_config.git
+          username: test
+          password: test
   rabbitmq:
-    host: 192.168.43.133
-    username: root
-    password: root
+    host: 192.168.138.100
+    username: test
+    password: test
 management:
   endpoints:
     web:
