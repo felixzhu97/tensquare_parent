@@ -1,0 +1,188 @@
+@startuml C4_Component_Diagrams
+title Tensquare 组件图
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+' ==== 用户服务 ====
+System_Boundary(user_svc, "用户服务") {
+    Component(controller, "UserController", "Spring MVC", "处理用户相关HTTP请求")
+    Component(service, "UserService", "Spring", "用户业务逻辑")
+    Component(dao, "UserDao", "MyBatis", "用户数据访问")
+    Component(model, "User", "POJO", "用户实体")
+    Component(jwt, "JwtUtil", "工具类", "JWT令牌处理")
+}
+
+SystemDb(user_db, "MySQL", "用户数据库")
+System_Ext(auth, "认证服务", "JWT验证")
+
+Rel(controller, service, "调用", "Java")
+Rel(service, dao, "调用", "Java")
+Rel(dao, user_db, "读写", "JDBC")
+Rel(model, controller, "使用", "Java")
+Rel(model, service, "使用", "Java")
+Rel(model, dao, "使用", "Java")
+Rel(controller, auth, "验证", "JWT")
+Rel(service, jwt, "使用", "Java")
+
+newpage
+
+' ==== 文章服务 ====
+System_Boundary(article_svc, "文章服务") {
+    Component(article_ctl, "ArticleController", "Spring MVC", "处理文章相关HTTP请求")
+    Component(article_srv, "ArticleService", "Spring", "文章业务逻辑")
+    Component(article_dao, "ArticleDao", "MyBatis", "文章数据访问")
+    Component(article_model, "Article", "POJO", "文章实体")
+    Component(comment_srv, "CommentService", "Spring", "评论管理")
+}
+
+SystemDb(article_db, "MySQL", "文章数据库")
+System_Ext(search, "搜索服务", "Elasticsearch")
+
+Rel(article_ctl, article_srv, "调用", "Java")
+Rel(article_srv, article_dao, "调用", "Java")
+Rel(article_dao, article_db, "读写", "JDBC")
+Rel(article_model, article_ctl, "使用", "Java")
+Rel(article_model, article_srv, "使用", "Java")
+Rel(article_model, article_dao, "使用", "Java")
+Rel(article_srv, comment_srv, "调用", "Java")
+Rel(article_srv, search, "索引", "REST")
+
+newpage
+
+' ==== 问答服务 ====
+newpage
+System_Boundary(qa_svc, "问答服务") {
+    Component(question, "QuestionController", "Spring MVC", "处理问题相关HTTP请求")
+    Component(answer, "AnswerController", "Spring MVC", "处理回答相关HTTP请求")
+    Component(qaService, "QAService", "Spring", "问答业务逻辑")
+    Component(qa_dao, "QADao", "MyBatis", "问答数据访问")
+    Component(qModel, "Question", "POJO", "问题实体")
+    Component(aModel, "Answer", "POJO", "回答实体")
+}
+
+SystemDb(qa_db, "MySQL", "问答数据库")
+System_Ext(search, "搜索服务", "Elasticsearch")
+
+Rel(question, qaService, "调用", "Java")
+Rel(answer, qaService, "调用", "Java")
+Rel(qaService, qa_dao, "调用", "Java")
+Rel(qa_dao, qa_db, "读写", "JDBC")
+Rel(qModel, question, "使用", "Java")
+Rel(aModel, answer, "使用", "Java")
+Rel(qaService, search, "索引", "REST")
+
+' ==== 好友服务 ====
+newpage
+System_Boundary(friend_svc, "好友服务") {
+    Component(friend_ctl, "FriendController", "Spring MVC", "处理好友关系HTTP请求")
+    Component(friend_srv, "FriendService", "Spring", "好友关系业务逻辑")
+    Component(friend_dao, "FriendDao", "MyBatis", "好友数据访问")
+    Component(friend_model, "Friend", "POJO", "好友关系实体")
+    Component(notify_srv, "NotificationService", "Spring", "好友通知管理")
+}
+
+SystemDb(friend_db, "MySQL", "好友关系数据库")
+System_Ext(user_svc, "用户服务", "用户信息")
+System_Ext(sms_svc, "短信服务", "消息通知")
+
+Rel(friend_ctl, friend_srv, "调用", "Java")
+Rel(friend_srv, friend_dao, "调用", "Java")
+Rel(friend_dao, friend_db, "读写", "JDBC")
+Rel(friend_model, friend_ctl, "使用", "Java")
+Rel(friend_model, friend_srv, "使用", "Java")
+Rel(friend_model, friend_dao, "使用", "Java")
+Rel(friend_srv, user_svc, "查询", "REST")
+Rel(notify_srv, sms_svc, "发送", "REST")
+
+' ==== 活动服务 ====
+newpage
+System_Boundary(gathering_svc, "活动服务") {
+    Component(gathering_ctl, "GatheringController", "Spring MVC", "处理活动相关HTTP请求")
+    Component(gathering_srv, "GatheringService", "Spring", "活动业务逻辑")
+    Component(gathering_dao, "GatheringDao", "MyBatis", "活动数据访问")
+    Component(gathering_model, "Gathering", "POJO", "活动实体")
+    Component(enroll_srv, "EnrollService", "Spring", "报名管理")
+}
+
+SystemDb(gathering_db, "MySQL", "活动数据库")
+System_Ext(user_svc, "用户服务", "用户信息")
+System_Ext(sms_svc, "短信服务", "消息通知")
+
+Rel(gathering_ctl, gathering_srv, "调用", "Java")
+Rel(gathering_srv, gathering_dao, "调用", "Java")
+Rel(gathering_dao, gathering_db, "读写", "JDBC")
+Rel(gathering_model, gathering_ctl, "使用", "Java")
+Rel(gathering_model, gathering_srv, "使用", "Java")
+Rel(gathering_model, gathering_dao, "使用", "Java")
+Rel(gathering_srv, user_svc, "验证", "REST")
+Rel(enroll_srv, sms_svc, "通知", "REST")
+
+' ==== 招聘服务 ====
+newpage
+System_Boundary(recruit_svc, "招聘服务") {
+    Component(enterprise_ctl, "EnterpriseController", "Spring MVC", "处理企业相关HTTP请求")
+    Component(position_ctl, "PositionController", "Spring MVC", "处理职位相关HTTP请求")
+    Component(recruit_srv, "RecruitService", "Spring", "招聘业务逻辑")
+    Component(recruit_dao, "RecruitDao", "MyBatis", "招聘数据访问")
+    Component(enterprise_model, "Enterprise", "POJO", "企业实体")
+    Component(position_model, "Position", "POJO", "职位实体")
+}
+
+SystemDb(recruit_db, "MySQL", "招聘数据库")
+System_Ext(search_svc, "搜索服务", "Elasticsearch")
+System_Ext(sms_svc, "短信服务", "消息通知")
+
+Rel(enterprise_ctl, recruit_srv, "调用", "Java")
+Rel(position_ctl, recruit_srv, "调用", "Java")
+Rel(recruit_srv, recruit_dao, "调用", "Java")
+Rel(recruit_dao, recruit_db, "读写", "JDBC")
+Rel(enterprise_model, enterprise_ctl, "使用", "Java")
+Rel(position_model, position_ctl, "使用", "Java")
+Rel(recruit_srv, search_svc, "索引", "REST")
+Rel(recruit_srv, sms_svc, "通知", "REST")
+
+' ==== 搜索服务 ====
+newpage
+System_Boundary(search_svc, "搜索服务") {
+    Component(search_ctl, "SearchController", "Spring MVC", "处理搜索请求")
+    Component(search_srv, "SearchService", "Spring", "搜索业务逻辑")
+    Component(indexer_srv, "IndexerService", "Spring", "索引管理")
+    Component(es_client, "ESClient", "Elasticsearch", "搜索客户端")
+}
+
+SystemDb(es_db, "Elasticsearch", "搜索索引")
+System_Ext(article_svc, "文章服务", "内容索引")
+System_Ext(qa_svc, "问答服务", "问答索引")
+System_Ext(recruit_svc, "招聘服务", "职位索引")
+
+Rel(search_ctl, search_srv, "调用", "Java")
+Rel(search_srv, es_client, "查询", "REST")
+Rel(es_client, es_db, "搜索", "HTTP")
+Rel(indexer_srv, es_client, "索引", "HTTP")
+Rel(indexer_srv, article_svc, "同步", "REST")
+Rel(indexer_srv, qa_svc, "同步", "REST")
+Rel(indexer_srv, recruit_svc, "同步", "REST")
+
+' ==== 短信服务 ====
+newpage
+System_Boundary(sms_svc, "短信服务") {
+    Component(sms_ctl, "SMSController", "Spring MVC", "处理短信请求")
+    Component(sms_srv, "SMSService", "Spring", "短信业务逻辑")
+    Component(gateway, "SMSGateway", "HTTP Client", "短信网关接口")
+    Component(template_srv, "TemplateService", "Spring", "短信模板管理")
+}
+
+System_Ext(provider, "短信服务商", "阿里云/腾讯云短信服务")
+System_Ext(user_svc, "用户服务", "用户验证")
+System_Ext(friend_svc, "好友服务", "好友通知")
+System_Ext(gathering_svc, "活动服务", "活动通知")
+
+Rel(sms_ctl, sms_srv, "调用", "Java")
+Rel(sms_srv, gateway, "发送", "HTTP")
+Rel(gateway, provider, "调用", "API")
+Rel(template_srv, sms_srv, "提供", "Java")
+Rel(user_svc, sms_ctl, "验证", "REST")
+Rel(friend_svc, sms_ctl, "请求", "REST")
+Rel(gathering_svc, sms_ctl, "请求", "REST")
+
+@enduml

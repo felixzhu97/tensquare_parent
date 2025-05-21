@@ -1,0 +1,39 @@
+@startuml C4_Container_Diagram
+title Container Diagram for Tensquare
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+System_Boundary(tensquare, "Tensquare平台") {
+    Container(web, "Web前端", "Vue.js", "提供用户界面")
+    Container(eureka, "服务注册中心", "Spring Cloud Eureka", "服务发现")
+    Container(config, "配置中心", "Spring Cloud Config", "统一配置管理")
+    Container(gateway, "API网关", "Spring Cloud Gateway", "路由和聚合服务")
+    
+    Container(auth, "认证服务", "Spring Security + JWT", "处理用户认证")
+    Container(user_svc, "用户服务", "Spring Boot", "管理用户数据")
+    Container(article_svc, "文章服务", "Spring Boot", "管理文章内容")
+    Container(qa_svc, "问答服务", "Spring Boot", "问答管理")
+    Container(friend_svc, "好友服务", "Spring Boot", "社交关系管理")
+    Container(gathering_svc, "活动服务", "Spring Boot", "活动管理")
+    Container(recruit_svc, "招聘服务", "Spring Boot", "招聘信息管理")
+    Container(search_svc, "搜索服务", "Spring Boot + Elasticsearch", "全文检索")
+    Container(sms_svc, "短信服务", "Spring Boot", "短信通知")
+}
+
+Person(user, "用户", "平台用户")
+
+Rel(user, web, "使用", "HTTP/HTTPS")
+Rel(web, gateway, "调用", "REST")
+Rel(gateway, eureka, "注册/发现", "HTTP")
+Rel(gateway, config, "获取配置", "HTTP")
+Rel(gateway, auth, "验证", "JWT")
+Rel(gateway, user_svc, "调用", "REST")
+Rel(gateway, article_svc, "调用", "REST") 
+Rel(gateway, qa_svc, "调用", "REST")
+Rel(gateway, friend_svc, "调用", "REST")
+Rel(gateway, gathering_svc, "调用", "REST")
+Rel(gateway, recruit_svc, "调用", "REST")
+Rel(gateway, search_svc, "调用", "REST")
+Rel(gateway, sms_svc, "调用", "REST")
+Rel(sms_svc, user, "发送", "短信")
+@enduml

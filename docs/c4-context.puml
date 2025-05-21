@@ -1,0 +1,24 @@
+@startuml C4_Context_Diagram
+title System Context Diagram for Tensquare
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "用户", "使用社交平台的各种用户")
+System(tensquare, "Tensquare社交平台", "基于Spring Cloud的微服务社交平台") {
+    System(eureka, "服务注册中心", "Spring Cloud Eureka")
+    System(gateway, "API网关", "Spring Cloud Gateway")
+    System(config, "配置中心", "Spring Cloud Config")
+    System(auth, "认证服务", "JWT认证")
+    System(user_svc, "用户服务", "用户管理")
+    System(article_svc, "文章服务", "内容管理")
+    System(qa_svc, "问答服务", "问答管理")
+    System(friend_svc, "好友服务", "社交关系")
+    System(gathering_svc, "活动服务", "活动管理")
+    System(recruit_svc, "招聘服务", "招聘信息")
+    System(search_svc, "搜索服务", "全文检索")
+    System(sms_svc, "短信服务", "消息通知")
+}
+
+Rel(user, tensquare, "使用", "HTTP/HTTPS")
+Rel(user, sms_svc, "接收", "短信")
+@enduml

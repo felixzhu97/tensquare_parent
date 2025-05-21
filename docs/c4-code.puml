@@ -1,0 +1,19 @@
+@startuml C4_Code_Diagram
+title Code Diagram for UserService
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+System_Boundary(user_service, "UserService") {
+    Component(register, "register()", "方法", "用户注册")
+    Component(login, "login()", "方法", "用户登录")
+    Component(getUser, "getUser()", "方法", "获取用户信息")
+    Component(update, "update()", "方法", "更新用户信息")
+}
+
+SystemDb(db, "MySQL", "用户表")
+
+Rel(register, db, "插入", "SQL")
+Rel(login, db, "查询", "SQL")
+Rel(getUser, db, "查询", "SQL")
+Rel(update, db, "更新", "SQL")
+@enduml
