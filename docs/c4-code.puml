@@ -1,19 +1,128 @@
 @startuml C4_Code_Diagram
-title Code Diagram for UserService
+title Tensquare 代码级视图
+top to bottom
 
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
+' ==== 用户服务 ====
 System_Boundary(user_service, "UserService") {
     Component(register, "register()", "方法", "用户注册")
     Component(login, "login()", "方法", "用户登录")
     Component(getUser, "getUser()", "方法", "获取用户信息")
     Component(update, "update()", "方法", "更新用户信息")
+    Component(auth, "auth()", "方法", "权限验证")
 }
 
-SystemDb(db, "MySQL", "用户表")
+SystemDb(user_db, "MySQL", "用户表")
 
-Rel(register, db, "插入", "SQL")
-Rel(login, db, "查询", "SQL")
-Rel(getUser, db, "查询", "SQL")
-Rel(update, db, "更新", "SQL")
+Rel(register, user_db, "插入", "SQL")
+Rel(login, user_db, "查询", "SQL")
+Rel(getUser, user_db, "查询", "SQL")
+Rel(update, user_db, "更新", "SQL")
+
+' ==== 文章服务 ====
+System_Boundary(article_service, "ArticleService") {
+    Component(publish, "publish()", "方法", "发布文章")
+    Component(comment, "comment()", "方法", "发表评论")
+    Component(like, "like()", "方法", "点赞文章")
+    Component(search, "search()", "方法", "搜索文章")
+}
+
+SystemDb(article_db, "MySQL", "文章表")
+System_Ext(search_svc, "SearchService", "Elasticsearch")
+
+Rel(publish, article_db, "插入", "SQL")
+Rel(comment, article_db, "插入", "SQL")
+Rel(like, article_db, "更新", "SQL")
+Rel(search, search_svc, "调用", "REST")
+
+' ==== 招聘服务 ====
+System_Boundary(recruit_service, "RecruitService") {
+    Component(postJob, "postJob()", "方法", "发布职位")
+    Component(apply, "apply()", "方法", "申请职位")
+    Component(searchJob, "searchJob()", "方法", "搜索职位")
+}
+
+SystemDb(recruit_db, "MySQL", "职位表")
+System_Ext(sms_svc, "SMSService", "短信通知")
+
+Rel(postJob, recruit_db, "插入", "SQL")
+Rel(apply, recruit_db, "插入", "SQL")
+Rel(searchJob, recruit_db, "查询", "SQL")
+Rel(apply, sms_svc, "调用", "REST")
+
+' ==== 问答服务 ====
+System_Boundary(qa_service, "QAService") {
+    Component(postQuestion, "postQuestion()", "方法", "提问")
+    Component(answer, "answer()", "方法", "回答")
+    Component(acceptAnswer, "acceptAnswer()", "方法", "采纳答案")
+}
+
+SystemDb(qa_db, "MySQL", "问答表")
+System_Ext(search_svc, "SearchService", "全文检索")
+
+Rel(postQuestion, qa_db, "插入", "SQL")
+Rel(answer, qa_db, "插入", "SQL")
+Rel(acceptAnswer, qa_db, "更新", "SQL")
+Rel(postQuestion, search_svc, "索引", "REST")
+
+' ==== 好友服务 ====
+System_Boundary(friend_service, "FriendService") {
+    Component(addFriend, "addFriend()", "方法", "添加好友")
+    Component(listFriends, "listFriends()", "方法", "好友列表")
+    Component(sendMsg, "sendMsg()", "方法", "发送消息")
+}
+
+SystemDb(friend_db, "MySQL", "好友关系表")
+System_Ext(sms_svc, "SMSService", "消息通知")
+
+Rel(addFriend, friend_db, "插入", "SQL")
+Rel(listFriends, friend_db, "查询", "SQL")
+Rel(sendMsg, sms_svc, "调用", "REST")
+
+' ==== 活动服务 ====
+System_Boundary(gathering_service, "GatheringService") {
+    Component(createEvent, "createEvent()", "方法", "创建活动")
+    Component(joinEvent, "joinEvent()", "方法", "参加活动")
+    Component(listEvents, "listEvents()", "方法", "活动列表")
+}
+
+SystemDb(gathering_db, "MySQL", "活动表")
+System_Ext(sms_svc, "SMSService", "活动通知")
+
+Rel(createEvent, gathering_db, "插入", "SQL")
+Rel(joinEvent, gathering_db, "插入", "SQL")
+Rel(listEvents, gathering_db, "查询", "SQL")
+Rel(joinEvent, sms_svc, "调用", "REST")
+
+' ==== 搜索服务 ====
+System_Boundary(search_service, "SearchService") {
+    Component(index, "index()", "方法", "创建索引")
+    Component(query, "query()", "方法", "执行搜索")
+    Component(suggest, "suggest()", "方法", "搜索建议")
+}
+
+SystemDb(es_db, "Elasticsearch", "搜索索引")
+System_Ext(article_svc, "ArticleService", "文章索引")
+System_Ext(qa_svc, "QAService", "问答索引")
+
+Rel(index, es_db, "更新", "HTTP")
+Rel(query, es_db, "查询", "HTTP")
+Rel(index, article_svc, "同步", "REST")
+Rel(index, qa_svc, "同步", "REST")
+
+' ==== 短信服务 ====
+System_Boundary(sms_service, "SMSService") {
+    Component(sendCode, "sendCode()", "方法", "发送验证码")
+    Component(sendNotice, "sendNotice()", "方法", "发送通知")
+    Component(checkTemplate, "checkTemplate()", "方法", "模板审核")
+}
+
+System_Ext(provider, "SMSProvider", "短信服务商")
+SystemDb(template_db, "MySQL", "模板表")
+
+Rel(sendCode, provider, "调用", "API")
+Rel(sendNotice, provider, "调用", "API")
+Rel(checkTemplate, template_db, "查询", "SQL")
+
 @enduml
